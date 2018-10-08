@@ -1,0 +1,120 @@
+ssh pocket@xx.xxx.xx.xx -i ~/.ssh/name_of_key
+~/.ssh/configを作って、タイムアウト設定をしたほうがよい
+
+sudo apt update
+sudo apt install git emacs build-essential tmux htop zip unzip
+wget https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
+sh Anaconda3-5.1.0-Linux-x86_64.sh
+（動画と違う点：今はMSと提携したからVSCodeもインスコしてねと言われる⇒Noで良い？）
+
+source .bashrc
+python
+（ここで3.6になっていることを確認）
+pip install lightgbm
+pip install kaggle
+
+git clone https://pocketsuteado@bitbucket.org/pocketsuteado/homecredit.git
+cd homecredit
+mkdir input output logs
+
+cd ~/.kaggle
+vi kaggle.json
+kaggle competitions download -c avito-demand-prediction -f train.csv.zip
+
+storage でregionalなバケットを作成
+
+・Upload
+gsutil -m cp *.zip gs://pocket_avito/
+
+・Download
+
+
+・OpenCV
+sudo apt update
+sudo apt install libgl1-mesa-glx
+conda install -c conda-forge opencv
+ 
+・Submission
+kaggle competitions submit -c favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+
+
+・Disk
+ディスクのページから200を500に変更
+sudo growpart /dev/sda 1
+sudo resize2fs /dev/sda1
+
+
+
+・雑
+gsutil -m cp -r gs://pocket_avito/input/* input/
+gsutil -m cp -r gs://pocket_kaggle_talking/input/all_input.zip input/
+gsutil -m cp -r gs://pocket_kaggle_talking/input/test.zip input/
+
+
+upload方法
+
+gsutil -m cp pocket_prediction.zip gs://2018kaggletalkingdata/prediction_pocket/train/pocket_prediction.zip
+
+gsutil -m cp test_plot.png gs://pocket_kaggle_talking/output/test_plot2.png
+
+zip submission_merged_full.zip submission_merged_full.csv
+gsutil -m cp -r gs://pocket_kaggle_talking/output/submission_merged_full.zip output/
+gsutil -m cp bad_ip.csv gs://pocket_kaggle_talking/output/bad_ip_full.csv
+
+kg submit submission_full.zip -c talkingdata-adtracking-fraud-detection -m "Message"
+
+
+gsutil -m cp -r gs://2018kaggletalkingdata/predictions/train/29* .
+
+gsutil -m cp -r gs://2018kaggletalkingdata/predictions_mamas/train/* output/
+-----------------------------
+
+DNN
+
+
+pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.10.1-cp36-cp36m-linux_x86_64.whl
+
+(pip install --ignore-installed --upgrade tfBinaryURL)
+
+# Python
+import tensorflow as tf
+hello = tf.constant('Hello, TensorFlow!')
+sess = tf.Session()
+print(sess.run(hello))
+
+↓こっちはうまくいかなかった？
+# Adds NVIDIA package repository.
+sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+wget http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64/nvidia-machine-learning-repo-ubuntu1604_1.0.0-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+sudo dpkg -i nvidia-machine-learning-repo-ubuntu1604_1.0.0-1_amd64.deb
+sudo apt-get update
+# Includes optional NCCL 2.x.
+sudo apt-get install cuda9.0 cuda-cublas-9-0 cuda-cufft-9-0 cuda-curand-9-0 \
+  cuda-cusolver-9-0 cuda-cusparse-9-0 libcudnn7=7.1.4.18-1+cuda9.0 \
+   libnccl2=2.2.13-1+cuda9.0 cuda-command-line-tools-9-0
+# Optionally install TensorRT runtime, must be done after above cuda install.
+sudo apt-get update
+sudo apt-get install libnvinfer4=4.1.2-1+cuda9.0
+
+-------------------------------------------
+$ sudo apt update
+$ sudo apt upgrade
+
+$ sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+$ wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.2.88-1_amd64.de
+$ sudo dpkg -i cuda-repo-ubuntu1604_9.2.88-1_amd64.deb
+$ sudo apt update
+$ sudo apt install cuda-9-0 cuda-drivers
+$ sudo reboot
+echo 'export PATH="/usr/local/cuda/bin:$PATH"' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"' >> ~/.bashrc
+source ~/.bashrc
+nvidia-smi
+
+wget http://developer.download.nvidia.com/compute/redist/cudnn/v7.0.5/cudnn-9.0-linux-x64-v7.tgz
+tar xzf cudnn-9.0-linux-x64-v7.tgz
+sudo cp -a cuda/lib64/* /usr/local/lib/
+sudo cp -a cuda/include/* /usr/local/include/
+sudo ldconfig
